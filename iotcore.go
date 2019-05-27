@@ -16,7 +16,7 @@ import (
 )
 
 // NewMQTTOptions creates a Paho MQTT ClientOptions that may be used to connect to the given MQTT bridge using TLS.
-func NewMQTTOptions(config DeviceConfig, bridge MQTTBridge, caCertsPath string) (*MQTT.ClientOptions, error) {
+func NewMQTTOptions(device Device, bridge MQTTBridge, caCertsPath string) (*MQTT.ClientOptions, error) {
 	// Load CA certs
 	certpool := x509.NewCertPool()
 	pemCerts, err := ioutil.ReadFile(caCertsPath)
@@ -36,7 +36,7 @@ func NewMQTTOptions(config DeviceConfig, bridge MQTTBridge, caCertsPath string) 
 
 	opts := MQTT.NewClientOptions()
 	opts.AddBroker(bridge.URL())
-	opts.SetClientID(config.ClientID())
+	opts.SetClientID(device.ClientID())
 	opts.SetTLSConfig(tlsConf)
 	opts.SetUsername("unused")
 
@@ -67,8 +67,8 @@ func DeviceIDFromCert(certPath string) (string, error) {
 	return cert.Subject.CommonName, nil
 }
 
-// DeviceConfig represents a Google Cloud IoT Core device.
-type DeviceConfig struct {
+// Device represents a Google Cloud IoT Core device.
+type Device struct {
 	ProjectID   string
 	RegistryID  string
 	DeviceID    string
@@ -77,29 +77,29 @@ type DeviceConfig struct {
 }
 
 // ClientID returns the fully-qualified Google Cloud IoT Core device ID.
-func (c *DeviceConfig) ClientID() string {
-	return fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v", c.ProjectID, c.Region, c.RegistryID, c.DeviceID)
+func (d *Device) ClientID() string {
+	return fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v", d.ProjectID, d.Region, d.RegistryID, d.DeviceID)
 }
 
 // ConfigTopic returns the MQTT topic to which the device can subscribe to get configuration updates.
-func (c *DeviceConfig) ConfigTopic() string {
-	return fmt.Sprintf("/devices/%v/config", c.DeviceID)
+func (d *Device) ConfigTopic() string {
+	return fmt.Sprintf("/devices/%v/config", d.DeviceID)
 }
 
 // TelemetryTopic returns the MQTT topic to which the device should publish telemetry events.
-func (c *DeviceConfig) TelemetryTopic() string {
-	return fmt.Sprintf("/devices/%v/events", c.DeviceID)
+func (d *Device) TelemetryTopic() string {
+	return fmt.Sprintf("/devices/%v/events", d.DeviceID)
 }
 
 // StateTopic returns the MQTT topic to which the device should publish state information.
 // This is optionally configured in the device registry. For more information see
 // https://cloud.google.com/iot/docs/how-tos/config/getting-state.
-func (c *DeviceConfig) StateTopic() string {
-	return fmt.Sprintf("/devices/%v/state", c.DeviceID)
+func (d *Device) StateTopic() string {
+	return fmt.Sprintf("/devices/%v/state", d.DeviceID)
 }
 
-func (c *DeviceConfig) publicKey() (*ecdsa.PublicKey, error) {
-	priv, err := c.privateKey()
+func (d *Device) publicKey() (*ecdsa.PublicKey, error) {
+	priv, err := d.privateKey()
 	if err != nil {
 		return nil, err
 	}
@@ -107,8 +107,8 @@ func (c *DeviceConfig) publicKey() (*ecdsa.PublicKey, error) {
 	return &priv.PublicKey, nil
 }
 
-func (c *DeviceConfig) privateKey() (*ecdsa.PrivateKey, error) {
-	keyBytes, err := ioutil.ReadFile(c.PrivKeyPath)
+func (d *Device) privateKey() (*ecdsa.PrivateKey, error) {
+	keyBytes, err := ioutil.ReadFile(d.PrivKeyPath)
 	if err != nil {
 		return nil, err
 	}
@@ -119,14 +119,14 @@ func (c *DeviceConfig) privateKey() (*ecdsa.PrivateKey, error) {
 // VerifyJWT checks the validity of the given JWT, including its signature and expiration. It returns true
 // with a nil error if the JWT is valid. Both false and a non-nil error (regardless of the accompanying
 // boolean value) indicate an invalid JWT.
-func (c *DeviceConfig) VerifyJWT(jwtStr string) (bool, error) {
+func (d *Device) VerifyJWT(jwtStr string) (bool, error) {
 	token, err := jwt.Parse(jwtStr, func(token *jwt.Token) (interface{}, error) {
 		// Validate the signing algorithm.
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("iotcore: unexpected signing method %v", token.Header["alg"])
 		}
 
-		return c.publicKey()
+		return d.publicKey()
 	})
 
 	if err != nil {
@@ -137,15 +137,15 @@ func (c *DeviceConfig) VerifyJWT(jwtStr string) (bool, error) {
 }
 
 // NewJWT creates a new JWT signed with the device's key and expiring in the given amount of time.
-func (c *DeviceConfig) NewJWT(exp time.Duration) (string, error) {
-	key, err := c.privateKey()
+func (d *Device) NewJWT(exp time.Duration) (string, error) {
+	key, err := d.privateKey()
 	if err != nil {
 		return "", fmt.Errorf("iotcore: failed to parse priv key: %v", err)
 	}
 
 	token := jwt.New(jwt.SigningMethodES256)
 	token.Claims = jwt.StandardClaims{
-		Audience:  c.ProjectID,
+		Audience:  d.ProjectID,
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(exp).Unix(),
 	}
