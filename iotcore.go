@@ -69,11 +69,11 @@ func DeviceIDFromCert(certPath string) (string, error) {
 
 // Device represents a Google Cloud IoT Core device.
 type Device struct {
-	ProjectID   string
-	RegistryID  string
-	DeviceID    string
-	PrivKeyPath string
-	Region      string
+	ProjectID   string `json:"project_id"`
+	RegistryID  string `json:"registry_id"`
+	DeviceID    string `json:"device_id"`
+	PrivKeyPath string `json:"priv_key_path"`
+	Region      string `json:"region"`
 }
 
 // ClientID returns the fully-qualified Google Cloud IoT Core device ID.
