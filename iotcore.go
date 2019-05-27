@@ -86,6 +86,13 @@ func (d *Device) ConfigTopic() string {
 	return fmt.Sprintf("/devices/%v/config", d.DeviceID)
 }
 
+// CommandTopic returns the MQTT topic to which the device can subscribe to get commands. The topic returned
+// ends with a wildcard, which Cloud IoT Core requires. Subscribing to a specific subfolder is not supported.
+// For more information see https://cloud.google.com/iot/docs/how-tos/commands.
+func (d *Device) CommandTopic() string {
+	return fmt.Sprintf("/devices/%v/commands/#", d.DeviceID)
+}
+
 // TelemetryTopic returns the MQTT topic to which the device should publish telemetry events.
 func (d *Device) TelemetryTopic() string {
 	return fmt.Sprintf("/devices/%v/events", d.DeviceID)
