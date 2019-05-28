@@ -23,7 +23,9 @@ func NewMQTTOptions(device Device, bridge MQTTBridge, caCertsPath string) (*MQTT
 	if err != nil {
 		return nil, fmt.Errorf("iotcore: failed to read CA certs: %v", err)
 	}
-	certpool.AppendCertsFromPEM(pemCerts)
+	if !certpool.AppendCertsFromPEM(pemCerts) {
+		return nil, fmt.Errorf("iotcore: no certs were parsed from given CA certs")
+	}
 
 	tlsConf := &tls.Config{
 		RootCAs:            certpool,
