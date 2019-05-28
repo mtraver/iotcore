@@ -34,3 +34,8 @@ type MQTTBroker struct {
 func (b *MQTTBroker) URL() string {
 	return fmt.Sprintf("ssl://%v:%v", b.Host, b.Port)
 }
+
+// String returns a string representation of the MQTTBroker.
+func (b *MQTTBroker) String() string {
+	return b.URL()
+}
