@@ -16,10 +16,10 @@ import (
 )
 
 // NewMQTTOptions creates a Paho MQTT ClientOptions that may be used to connect to the given MQTT broker using TLS.
-// It sets ClientID, TLSConfig, and Username, and adds a server to Servers by calling AddBroker. The caller must
-// set any further options; this function simply sets up the ClientOptions to connect to Google Cloud IoT Core.
-// For more information see https://cloud.google.com/iot/docs/how-tos/mqtt-bridge.
-func NewMQTTOptions(device Device, broker MQTTBroker, caCertsPath string) (*MQTT.ClientOptions, error) {
+// It sets ClientID, TLSConfig, Username, and Password, and adds a server to Servers by calling AddBroker. The caller
+// must set any further options; this function does the minimal configuration required to connect to Google Cloud IoT
+// Core. For more information see https://cloud.google.com/iot/docs/how-tos/mqtt-bridge.
+func NewMQTTOptions(device Device, jwtStr string, broker MQTTBroker, caCertsPath string) (*MQTT.ClientOptions, error) {
 	// Load CA certs
 	certpool := x509.NewCertPool()
 	pemCerts, err := ioutil.ReadFile(caCertsPath)
@@ -44,6 +44,7 @@ func NewMQTTOptions(device Device, broker MQTTBroker, caCertsPath string) (*MQTT
 	opts.SetClientID(device.ClientID())
 	opts.SetTLSConfig(tlsConf)
 	opts.SetUsername("unused")
+	opts.SetPassword(jwtStr)
 
 	return opts, nil
 }
