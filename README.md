@@ -1,4 +1,4 @@
-# Google Cloud IoT Core devices and MQTT interaction in Go
+# Google Cloud IoT Core over MQTT in Go
 
 [![GoDoc](https://godoc.org/github.com/mtraver/iotcore?status.svg)](https://godoc.org/github.com/mtraver/iotcore)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mtraver/iotcore)](https://goreportcard.com/report/github.com/mtraver/iotcore)
