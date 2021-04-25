@@ -67,14 +67,14 @@ type Device struct {
 //
 // By passing in options you may customize the ClientOptions. Options are functions with this signature:
 //
-//   func(Device, *mqtt.ClientOptions) error
+//   func(*Device, *mqtt.ClientOptions) error
 //
 // They modify the ClientOptions. The option functions are applied to the ClientOptions in the order given before the
 // Client is created. Some options are provided in this package (see options.go), but you may create your own as well.
 // For example, if you wish to set the connect timeout, you might write this:
 //
-//   func ConnectTimeout(t time.Duration) func(Device, *mqtt.ClientOptions) error {
-//   	return func(d Device, opts *mqtt.ClientOptions) error {
+//   func ConnectTimeout(t time.Duration) func(*Device, *mqtt.ClientOptions) error {
+//   	return func(d *Device, opts *mqtt.ClientOptions) error {
 //   		opts.SetConnectTimeout(t)
 //   		return nil
 //   	}
@@ -84,7 +84,7 @@ type Device struct {
 // connection — without loss of customizability.
 //
 // For more information about connecting to Google Cloud IoT Core's MQTT brokers see https://cloud.google.com/iot/docs/how-tos/mqtt-bridge.
-func (d *Device) NewClient(broker MQTTBroker, caCerts io.Reader, options ...func(Device, *mqtt.ClientOptions) error) (mqtt.Client, error) {
+func (d *Device) NewClient(broker MQTTBroker, caCerts io.Reader, options ...func(*Device, *mqtt.ClientOptions) error) (mqtt.Client, error) {
 	// Load CA certs.
 	pemCerts, err := ioutil.ReadAll(caCerts)
 	if err != nil {
@@ -111,7 +111,7 @@ func (d *Device) NewClient(broker MQTTBroker, caCerts io.Reader, options ...func
 	opts.SetCredentialsProvider(d.credentialsProvider(1 * time.Minute))
 
 	for _, option := range options {
-		if err := option(*d, opts); err != nil {
+		if err := option(d, opts); err != nil {
 			return nil, err
 		}
 	}
