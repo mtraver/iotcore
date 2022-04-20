@@ -13,7 +13,7 @@ import (
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	jwt "github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v4"
 )
 
 // Google Cloud IoT Core's MQTT brokers ignore the password when authenticating (they only care about the JWT).
