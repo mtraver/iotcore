@@ -32,7 +32,7 @@ type MQTTBroker struct {
 
 // URL returns the URL of the MQTT server.
 func (b *MQTTBroker) URL() string {
-	return fmt.Sprintf("ssl://%v:%v", b.Host, b.Port)
+	return fmt.Sprintf("ssl://%s:%d", b.Host, b.Port)
 }
 
 // String returns a string representation of the MQTTBroker.
