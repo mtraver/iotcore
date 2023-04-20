@@ -60,25 +60,25 @@ type Device struct {
 // which Google Cloud IoT Core requires. By default it sets up a github.com/eclipse/paho.mqtt.golang ClientOptions with the minimal
 // options required to establish a connection:
 //
-//   • Client ID
-//   • TLS configuration
-//   • Broker
-//   • A credentials provider that creates a new JWT with TTL 1 minute on each connection attempt.
+//   - Client ID
+//   - TLS configuration
+//   - Broker
+//   - A credentials provider that creates a new JWT with TTL 1 minute on each connection attempt.
 //
 // By passing in options you may customize the ClientOptions. Options are functions with this signature:
 //
-//   func(*Device, *mqtt.ClientOptions) error
+//	func(*Device, *mqtt.ClientOptions) error
 //
 // They modify the ClientOptions. The option functions are applied to the ClientOptions in the order given before the
 // Client is created. Some options are provided in this package (see options.go), but you may create your own as well.
 // For example, if you wish to set the connect timeout, you might write this:
 //
-//   func ConnectTimeout(t time.Duration) func(*Device, *mqtt.ClientOptions) error {
-//   	return func(d *Device, opts *mqtt.ClientOptions) error {
-//   		opts.SetConnectTimeout(t)
-//   		return nil
-//   	}
-//   }
+//	func ConnectTimeout(t time.Duration) func(*Device, *mqtt.ClientOptions) error {
+//		return func(d *Device, opts *mqtt.ClientOptions) error {
+//			opts.SetConnectTimeout(t)
+//			return nil
+//		}
+//	}
 //
 // Using option functions allows for sensible defaults — no options are required to establish a
 // connection — without loss of customizability.
