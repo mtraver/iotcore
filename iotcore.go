@@ -185,6 +185,10 @@ func (d *Device) persistentlyCachedCredentialsProvider(ttl time.Duration, path s
 	}
 }
 
+func (d *Device) ID() string {
+	return d.DeviceID
+}
+
 // ClientID returns the fully-qualified Google Cloud IoT Core device ID.
 func (d *Device) ClientID() string {
 	return fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v", d.ProjectID, d.Region, d.RegistryID, d.DeviceID)

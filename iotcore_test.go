@@ -12,6 +12,14 @@ var device = Device{
 	Region:      "us-central1",
 }
 
+func TestID(t *testing.T) {
+	want := device.DeviceID
+	got := device.ID()
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 func TestClientID(t *testing.T) {
 	want := "projects/myproject/locations/us-central1/registries/myregistery/devices/foo"
 	got := device.ClientID()
