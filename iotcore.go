@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"sync"
@@ -48,6 +47,7 @@ type Device struct {
 	ProjectID   string `json:"project_id"`
 	RegistryID  string `json:"registry_id"`
 	DeviceID    string `json:"device_id"`
+	CACerts     string `json:"ca_certs_path"`
 	PrivKeyPath string `json:"priv_key_path"`
 	Region      string `json:"region"`
 
@@ -84,9 +84,9 @@ type Device struct {
 // connection — without loss of customizability.
 //
 // For more information about connecting to Google Cloud IoT Core's MQTT brokers see https://cloud.google.com/iot/docs/how-tos/mqtt-bridge.
-func (d *Device) NewClient(broker MQTTBroker, caCerts io.Reader, options ...func(*Device, *mqtt.ClientOptions) error) (mqtt.Client, error) {
+func (d *Device) NewClient(broker MQTTBroker, options ...func(*Device, *mqtt.ClientOptions) error) (mqtt.Client, error) {
 	// Load CA certs.
-	pemCerts, err := ioutil.ReadAll(caCerts)
+	pemCerts, err := os.ReadFile(d.CACerts)
 	if err != nil {
 		return nil, fmt.Errorf("iotcore: failed to read CA certs: %v", err)
 	}

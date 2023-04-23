@@ -2,7 +2,6 @@ package iotcore_test
 
 import (
 	"log"
-	"os"
 	"time"
 
 	"github.com/mtraver/iotcore"
@@ -13,17 +12,12 @@ func Example() {
 		ProjectID:   "my-gcp-project",
 		RegistryID:  "my-iot-core-registry",
 		DeviceID:    "my-device",
+		CACerts:     "roots.pem",
 		PrivKeyPath: "my-device.pem",
 		Region:      "us-central1",
 	}
 
-	certs, err := os.Open("roots.pem")
-	if err != nil {
-		log.Fatalf("Failed to open certs file: %v", err)
-	}
-	defer certs.Close()
-
-	client, err := d.NewClient(iotcore.DefaultBroker, certs)
+	client, err := d.NewClient(iotcore.DefaultBroker)
 	if err != nil {
 		log.Fatalf("Failed to make MQTT client: %v", err)
 	}
