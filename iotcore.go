@@ -44,9 +44,10 @@ func DeviceIDFromCert(certPath string) (string, error) {
 
 // Device represents a Google Cloud IoT Core device.
 type Device struct {
-	ProjectID   string `json:"project_id"`
-	RegistryID  string `json:"registry_id"`
-	DeviceID    string `json:"device_id"`
+	ProjectID  string `json:"project_id"`
+	RegistryID string `json:"registry_id"`
+	DeviceID   string `json:"device_id"`
+	// CACerts must contain the path to a .pem file containing trusted root certs. Download Google's from https://pki.google.com/roots.pem.
 	CACerts     string `json:"ca_certs_path"`
 	PrivKeyPath string `json:"priv_key_path"`
 	Region      string `json:"region"`

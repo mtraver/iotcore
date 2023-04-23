@@ -9,9 +9,10 @@ import (
 
 func Example() {
 	d := iotcore.Device{
-		ProjectID:   "my-gcp-project",
-		RegistryID:  "my-iot-core-registry",
-		DeviceID:    "my-device",
+		ProjectID:  "my-gcp-project",
+		RegistryID: "my-iot-core-registry",
+		DeviceID:   "my-device",
+		// Path to a .pem file containing trusted root certs. Download Google's from https://pki.google.com/roots.pem.
 		CACerts:     "roots.pem",
 		PrivKeyPath: "my-device.pem",
 		Region:      "us-central1",
